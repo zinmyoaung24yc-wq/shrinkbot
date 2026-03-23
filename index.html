@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #f0f0f0; text-align: center; font-family: sans-serif; padding: 20px; }
+        .button { background: #248bcf; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1 id="user-name">Hello!</h1>
+    <p>Welcome to My Task Bot</p>
+    
+    <button class="button" onclick="doTask()">💰 Task လုပ်ပြီး Point ယူမယ်</button>
+
+    <script>
+        // Telegram ကနေ User အချက်အလက် ယူခြင်း
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Screen အပြည့် ချဲ့လိုက်တာ
+
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            document.getElementById('user-name').innerText = `Hello, ${user.first_name}!`;
+        }
+
+        function doTask() {
+            alert("Task အောင်မြင်ပါသည်! +10 Points");
+            // ဒီနေရာမှာ နောက်ပိုင်း Database နဲ့ ချိတ်ပြီး point ပေါင်းလို့ရပါတယ်
+        }
+    </script>
+</body>
+</html>
+
