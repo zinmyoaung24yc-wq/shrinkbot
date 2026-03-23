@@ -1,34 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Mini App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tap to Earn Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #f0f0f0; text-align: center; font-family: sans-serif; padding: 20px; }
-        .button { background: #248bcf; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); color: white; overflow: hidden; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #user-info { position: absolute; top: 20px; font-size: 18px; font-weight: bold; color: #0088cc; }
+        #score-container { font-size: 48px; font-weight: 800; margin-bottom: 20px; text-shadow: 0 0 10px #f39c12; }
+        .coin-btn { width: 200px; height: 200px; background: radial-gradient(circle, #f1c40f 0%, #f39c12 100%); border-radius: 50%; border: 8px solid #d35400; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 80px; box-shadow: 0 10px 30px rgba(243, 156, 18, 0.5); transition: transform 0.1s; user-select: none; }
+        .coin-btn:active { transform: scale(0.95); }
+        .tap-effect { position: absolute; color: #f1c40f; font-weight: bold; animation: floatUp 0.6s ease-out forwards; pointer-events: none; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
     </style>
 </head>
 <body>
-    <h1 id="user-name">Hello!</h1>
-    <p>Welcome to My Task Bot</p>
+
+    <div id="user-info">Hello, <span id="username">User</span>!</div>
+    <div id="score-container">💰 <span id="score">0</span></div>
     
-    <button class="button" onclick="doTask()">💰 Task လုပ်ပြီး Point ယူမယ်</button>
+    <div class="coin-btn" id="tap-btn">🪙</div>
 
     <script>
-        // Telegram ကနေ User အချက်အလက် ယူခြင်း
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Screen အပြည့် ချဲ့လိုက်တာ
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Full screen ဖြစ်အောင်လုပ်တာ
 
-        const user = tg.initDataUnsafe.user;
-        if (user) {
-            document.getElementById('user-name').innerText = `Hello, ${user.first_name}!`;
+        let score = 0;
+        const scoreEl = document.getElementById('score');
+        const btn = document.getElementById('tap-btn');
+        const usernameEl = document.getElementById('username');
+
+        // Telegram User Name ကို ယူတာ
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            usernameEl.innerText = tg.initDataUnsafe.user.first_name;
         }
 
-        function doTask() {
-            alert("Task အောင်မြင်ပါသည်! +10 Points");
-            // ဒီနေရာမှာ နောက်ပိုင်း Database နဲ့ ချိတ်ပြီး point ပေါင်းလို့ရပါတယ်
-        }
+        btn.addEventListener('touchstart', (e) => {
+            score += 1;
+            scoreEl.innerText = score;
+            
+            // Tap Effect (စာသားလေးတွေ လွင့်တက်တာ)
+            const effect = document.createElement('div');
+            effect.className = 'tap-effect';
+            effect.innerText = '+1';
+            effect.style.left = e.touches[0].clientX + 'px';
+            effect.style.top = e.touches[0].clientY + 'px';
+            document.body.appendChild(effect);
+            
+            setTimeout(() => effect.remove(), 600);
+            tg.HapticFeedback.impactOccurred('medium'); // ဖုန်းတုန်အောင်လုပ်တာ
+        });
     </script>
 </body>
 </html>
-
