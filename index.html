@@ -1,3 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Easy Bonus Mining Pro</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; margin: 0; padding: 15px; text-align: center; }
+        .card { background: #1e1e1e; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .balance-title { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-amount { font-size: 36px; font-weight: bold; color: #f1c40f; margin: 10px 0; font-family: monospace; }
+        .mining-rate { font-size: 13px; color: #27ae60; margin-bottom: 20px; }
+        .withdraw-btn { background: #5d3fd3; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .withdraw-btn:active { transform: scale(0.98); background: #4b32a8; }
+        .task-section { text-align: left; margin-top: 25px; }
+        .task-item { background: #1e1e1e; padding: 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 10px; border: 1px solid #222; }
+        .task-icon { font-size: 24px; color: #0088cc; margin-right: 15px; }
+        .task-info { flex: 1; }
+        .task-name { font-size: 14px; font-weight: bold; }
+        .task-reward { font-size: 12px; color: #f1c40f; }
+        .join-btn { background: #0088cc; border: none; color: white; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="user-display" style="font-weight: bold; margin-bottom: 10px; color: #0088cc;">Loading...</div>
+        <div class="balance-title">Available Balance</div>
+        <div class="balance-amount">$ <span id="balance">0.0000000000</span></div>
+        <div class="mining-rate"><i class="fas fa-bolt"></i> Mining: 0.0000000951 / sec</div>
+        <button class="withdraw-btn" onclick="withdraw()">WITHDRAW</button>
+    </div>
+
+    <div class="task-section">
+        <div style="font-weight: bold; margin-bottom: 15px;">BONUS TASKS</div>
+        <div class="task-item">
+            <i class="fab fa-telegram task-icon"></i>
+            <div class="task-info">
+                <div class="task-name">Join Official Channel</div>
+                <div class="task-reward">+$0.50 Bonus</div>
+            </div>
+            <button class="join-btn" onclick="doTask('https://t.me/YOUR_CHANNEL')">JOIN</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // --- Firebase Config ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVKvDQUqPY1RCw3FcJN8GdpgwR1jenSbU",
+            authDomain: "my-mining-bot-75cc5.firebaseapp.com",
+            databaseURL: "https://my-mining-bot-75cc5-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "my-mining-bot-75cc5",
+            storageBucket: "my-mining-bot-75cc5.firebasestorage.app",
+            messagingSenderId: "528479089466",
+            appId: "1:528479089466:web:d91cbd2980dd211f79d603"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test_user";
+        let userName = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "User";
+        document.getElementById('user-display').innerText = "Account: " + userName;
+
+        let balance = 0;
+        const balanceEl = document.getElementById('balance');
+
 // ၁။ Database ကနေ ဒေတာ အဟောင်း ပြန်ယူခြင်း
         db.ref('users/' + userId).on('value', (snapshot) => {
             if (snapshot.exists()) {
@@ -39,4 +112,4 @@
         }
     </script>
 </body>
-            </html>
+</html>
