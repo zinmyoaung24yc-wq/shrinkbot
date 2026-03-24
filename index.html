@@ -1,82 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Easy Bonus Pro</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; margin: 0; padding: 15px; text-align: center; }
-        .card { background: #1e1e1e; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #333; }
-        .balance-title { font-size: 14px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
-        .balance-amount { font-size: 32px; font-weight: bold; color: #fff; margin-bottom: 15px; }
-        .withdraw-btn { background: #5d3fd3; color: white; border: none; padding: 12px 30px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; font-size: 13px; margin-top: 15px; }
-        .stat-box { color: #888; } .stat-box span { color: #fff; float: right; }
-        .section-title { text-align: left; font-size: 16px; font-weight: bold; margin: 20px 0 10px; color: #ddd; }
-        .task-item { background: #1e1e1e; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-left: 4px solid #0088cc; }
-        .task-info { text-align: left; flex: 1; margin-left: 10px; }
-        .task-name { font-size: 14px; font-weight: bold; }
-        .task-reward { font-size: 12px; color: #f1c40f; }
-        .claim-btn { background: #0088cc; border: none; color: white; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; }
-    </style>
-</head>
-<body>
+// ၁။ Database ကနေ ဒေတာ အဟောင်း ပြန်ယူခြင်း
+        db.ref('users/' + userId).on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                balance = snapshot.val().balance;
+                balanceEl.innerText = balance.toFixed(10);
+            }
+        });
 
-    <div class="card">
-        <div class="balance-title">My Balance</div>
-        <div class="balance-amount">$ <span id="balance">0.0000000000</span></div>
-        <button class="withdraw-btn"><i class="fas fa-arrow-down"></i> WITHDRAW</button>
-        
-        <div class="stats-grid">
-            <div class="stat-box">⚡ Per second <span>0.0000000951</span></div>
-            <div class="stat-box">☀️ Per day <span>0.0082166400</span></div>
-            <div class="stat-box">🌙 Per month <span>0.2500898717</span></div>
-            <div class="stat-box">💰 Per year <span>3.0011277600</span></div>
-        </div>
-    </div>
-
-    <div class="section-title">COMPLETE TASKS & EARN MORE</div>
-
-    <div class="task-item">
-        <i class="fab fa-telegram" style="font-size: 24px; color: #0088cc;"></i>
-        <div class="task-info">
-            <div class="task-name">Subscribe to Telegram Channel</div>
-            <div class="task-reward">+$0.05</div>
-        </div>
-        <button class="claim-btn" onclick="openTask('https://t.me/YOUR_CHANNEL')">JOIN</button>
-    </div>
-
-    <div class="task-item">
-        <i class="fab fa-youtube" style="font-size: 24px; color: #ff0000;"></i>
-        <div class="task-info">
-            <div class="task-name">Subscribe to YouTube Channel</div>
-            <div class="task-reward">+$0.10</div>
-        </div>
-        <button class="claim-btn" onclick="openTask('https://youtube.com/YOUR_CHANNEL')">JOIN</button>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let balance = 0.0000000000;
-        const ratePerSecond = 0.0000000951;
-
-        // Auto Mining Logic
+        // ၂။ Mining Logic (၁ စက္ကန့်တိုင်း တိုးမယ်)
         setInterval(() => {
-            balance += ratePerSecond;
-            document.getElementById('balance').innerText = balance.toFixed(10);
+            balance += 0.0000000951;
+            balanceEl.innerText = balance.toFixed(10);
         }, 1000);
 
-        function openTask(link) {
+        // ၃။ ဒေတာကို ၅ စက္ကန့်တစ်ခါ Database ထဲ သိမ်းမယ်
+        setInterval(() => {
+            db.ref('users/' + userId).update({
+                name: userName,
+                balance: balance,
+                lastUpdate: Date.now()
+            });
+        }, 5000);
+
+        function doTask(link) {
             tg.openLink(link);
             setTimeout(() => {
-                alert("Task completed! Reward added.");
-                balance += 0.05;
-            }, 5000);
+                balance += 0.50;
+                db.ref('users/' + userId).update({ balance: balance });
+                alert("Bonus $0.50 Added!");
+            }, 3000);
+        }
+
+        function withdraw() {
+            if (balance < 10) {
+                alert("အနည်းဆုံး $10 ပြည့်မှ ထုတ်ယူနိုင်ပါမည်။");
+            } else {
+                alert("ထုတ်ယူရန် တောင်းဆိုမှု တင်ပြပြီးပါပြီ။ Admin က စစ်ဆေးပေးပါလိမ့်မည်။");
+            }
         }
     </script>
 </body>
-</html>
+            </html>
