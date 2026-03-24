@@ -1,4 +1,4 @@
-i<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,47 +11,41 @@ i<!DOCTYPE html>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; margin: 0; padding: 15px; text-align: center; }
         .card { background: #1e1e1e; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .balance-title { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
         .balance-amount { font-size: 36px; font-weight: bold; color: #f1c40f; margin: 10px 0; font-family: monospace; }
-        .mining-rate { font-size: 13px; color: #27ae60; margin-bottom: 20px; }
-        .withdraw-btn { background: #5d3fd3; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .withdraw-btn:active { transform: scale(0.98); background: #4b32a8; }
-        .task-section { text-align: left; margin-top: 25px; }
-        .task-item { background: #1e1e1e; padding: 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 10px; border: 1px solid #222; }
-        .task-icon { font-size: 24px; color: #0088cc; margin-right: 15px; }
-        .task-info { flex: 1; }
-        .task-name { font-size: 14px; font-weight: bold; }
+        .btn { border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        .withdraw-btn { background: #5d3fd3; color: white; }
+        .invite-btn { background: #27ae60; color: white; }
+        .task-item { background: #1e1e1e; padding: 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 10px; border: 1px solid #222; text-align: left; }
+        .task-info { flex: 1; margin-left: 10px; }
         .task-reward { font-size: 12px; color: #f1c40f; }
-        .join-btn { background: #0088cc; border: none; color: white; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+        .join-btn { background: #0088cc; border: none; color: white; padding: 8px 15px; border-radius: 8px; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div id="user-display" style="font-weight: bold; margin-bottom: 10px; color: #0088cc;">Loading...</div>
-        <div class="balance-title">Available Balance</div>
+        <div id="user-display" style="font-weight: bold; color: #0088cc;">Loading Account...</div>
+        <div style="font-size: 14px; color: #888; margin-top: 10px;">AVAILABLE BALANCE</div>
         <div class="balance-amount">$ <span id="balance">0.0000000000</span></div>
-        <div class="mining-rate"><i class="fas fa-bolt"></i> Mining: 0.0000000951 / sec</div>
-        <button class="withdraw-btn" onclick="withdraw()">WITHDRAW</button>
+        <button class="btn withdraw-btn" onclick="withdraw()">WITHDRAW</button>
+        <button class="btn invite-btn" onclick="copyReferral()">INVITE FRIENDS (+$1.00)</button>
     </div>
 
-    <div class="task-section">
-        <div style="font-weight: bold; margin-bottom: 15px;">BONUS TASKS</div>
-        <div class="task-item">
-            <i class="fab fa-telegram task-icon"></i>
-            <div class="task-info">
-                <div class="task-name">Join Official Channel</div>
-                <div class="task-reward">+$0.50 Bonus</div>
-            </div>
-            <button class="join-btn" onclick="doTask('https://t.me/YOUR_CHANNEL')">JOIN</button>
+    <div style="text-align: left; font-weight: bold; margin: 20px 0 10px;">TASKS</div>
+    <div class="task-item">
+        <i class="fab fa-telegram" style="font-size: 24px; color: #0088cc;"></i>
+        <div class="task-info">
+            <div style="font-size: 14px;">Join Official Channel</div>
+            <div class="task-reward">+$0.50 Bonus</div>
         </div>
+        <button class="join-btn" onclick="doTask('https://t.me/AAA3ycc')">JOIN</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // --- Firebase Config ---
+        // --- Firebase Config (သင့် Key များကို ဤနေရာတွင် ထည့်ပြီးသားဖြစ်သည်) ---
         const firebaseConfig = {
             apiKey: "AIzaSyBVKvDQUqPY1RCw3FcJN8GdpgwR1jenSbU",
             authDomain: "my-mining-bot-75cc5.firebaseapp.com",
@@ -71,7 +65,7 @@ i<!DOCTYPE html>
         let balance = 0;
         const balanceEl = document.getElementById('balance');
 
-// ၁။ Database ကနေ ဒေတာ အဟောင်း ပြန်ယူခြင်း
+        // ၁။ ဒေတာ ပြန်ယူခြင်း
         db.ref('users/' + userId).on('value', (snapshot) => {
             if (snapshot.exists()) {
                 balance = snapshot.val().balance;
@@ -79,36 +73,43 @@ i<!DOCTYPE html>
             }
         });
 
-        // ၂။ Mining Logic (၁ စက္ကန့်တိုင်း တိုးမယ်)
+// ၂။ Mining (၁ စက္ကန့်တိုင်း တိုးမည်)
         setInterval(() => {
             balance += 0.0000000951;
             balanceEl.innerText = balance.toFixed(10);
         }, 1000);
 
-        // ၃။ ဒေတာကို ၅ စက္ကန့်တစ်ခါ Database ထဲ သိမ်းမယ်
+        // ၃။ Database သိမ်းခြင်း (၅ စက္ကန့်တစ်ခါ)
         setInterval(() => {
             db.ref('users/' + userId).update({
                 name: userName,
-                balance: balance,
-                lastUpdate: Date.now()
+                balance: balance
             });
         }, 5000);
+
+        // ၄။ Referral Link (လူဖိတ်ရန်)
+        function copyReferral() {
+            let botLink = "https://t.me/@Gmailfor123Bot?start=" + userId;
+            const el = document.createElement('textarea');
+            el.value = "ဒီ Bot မှာ ပိုက်ဆံတွေ အလကား Mining လုပ်လို့ရတယ်နော်။ ဒီမှာနှိပ်ပြီး စမ်းကြည့်ပါ- " + botLink;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("သင့်ရဲ့ Referral Link ကို Copy ကူးပြီးပါပြီ။ သူငယ်ချင်းတွေကို ပို့ပေးလိုက်ပါ။");
+        }
 
         function doTask(link) {
             tg.openLink(link);
             setTimeout(() => {
                 balance += 0.50;
                 db.ref('users/' + userId).update({ balance: balance });
-                alert("Bonus $0.50 Added!");
-            }, 3000);
+                alert("Bonus $0.50 ရရှိပါပြီ!");
+            }, 5000);
         }
 
         function withdraw() {
-            if (balance < 10) {
-                alert("အနည်းဆုံး $10 ပြည့်မှ ထုတ်ယူနိုင်ပါမည်။");
-            } else {
-                alert("ထုတ်ယူရန် တောင်းဆိုမှု တင်ပြပြီးပါပြီ။ Admin က စစ်ဆေးပေးပါလိမ့်မည်။");
-            }
+            alert("အနည်းဆုံး $10 ပြည့်မှ ထုတ်ယူနိုင်ပါမည်။");
         }
     </script>
 </body>
